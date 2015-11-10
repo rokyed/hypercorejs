@@ -8,34 +8,36 @@ window.HyperCore.addBlueprint('HyperCORE', {
     HYPERCORE: null,
 
     toLoadCount: 0,
-    
+
     readyCount: 0,
-    
+
     scripts: null,
-    
+
     encounteredError: false,
 
     errorCallBackFunction: null,
-    
+
     errorCallBackScope: null,
-    
-    
+
+
     callBackFunction: null,
-    
+
     callBackScope: null,
-    
+
     callBackDelay: 0,
-    
+
     shallReload: false,
-    
+
     doConsoleLog: false,
 
     listOfLoadedScripts: null,
 
+    flderURL: '',
 
-    setUp: function(scripts, cbFn,cbScope,cbDelay, startImporting, shallReloadPage, consoleLog, eCbFn, eCbScope) {
+
+    setUp: function(scripts, cbFn,cbScope,cbDelay, startImporting, shallReloadPage, consoleLog, eCbFn, eCbScope,appFolderUrl) {
         this.listOfLoadedScripts = [];
-        this.setupWindowOnError();        
+        this.setupWindowOnError();
         this.scripts = scripts;
         this.callBackFunction = cbFn || null;
         this.callBackScope = cbScope || null;
@@ -44,13 +46,14 @@ window.HyperCore.addBlueprint('HyperCORE', {
         this.callBackDelay = cbDelay || 0;
         this.shallReload = shallReloadPage ? true : false;
         this.doConsoleLog = consoleLog ? true : false;
+        this.folderURL = appFolderUrl || '';
 
         var me = this;
         window.addEventListener(this.eventName, function (e) {
             me.onHyperCoreEvent(e.detail);
         }, false);
 
-        if (startImporting) 
+        if (startImporting)
             this.startImport();
     },
 
@@ -66,56 +69,56 @@ window.HyperCore.addBlueprint('HyperCORE', {
     },
 
     scriptLoadedHandler: function() {
-        var me = this;  
+        var me = this;
         console.log([me.loadedCount, me.readyCount, me.toLoadCount, me.encounteredError]);
         if (me.readyCount == me.toLoadCount &&/* me.readyCount == me.toLoadCount &&*/ !me.encounteredError) {
-           
+
             window.setTimeout(function () {
                 me.callBackFunction.apply(me.callBackScope);
             }, me.callbackDelay);
         }
 
         if (me.encounteredError) {
-            alert('ENCOUNTERED ERROR PLEASE REFRESH');        
+            alert('ENCOUNTERED ERROR PLEASE REFRESH');
         }
     },
 
     scriptHandle: function() {
         this.readyCount = this.readyCount + 1;
-        this.scriptLoadedHandler(); 
+        this.scriptLoadedHandler();
         this.fireEvent({
             action: 'scriptStatus',
             status: 'loaded',
             args: arguments
-        }); 
-        //debugger;    
+        });
+        //debugger;
     },
-    
+
     populateListOfScripts: function(newArray) {
         this.listOfLoadedScripts.push(newArray);
         this.listOfLoadedScripts = this.flattenArrayOfArrays(this.listOfLoadedScripts);
     },
-    
+
     cleanseArrayOfScripts: function(arrayOfScripts) {
         var cleanArray = [];
 
         for (var i = 0;i < arrayOfScripts.length;i++) {
-            
+
             if (this.listOfLoadedScripts.indexOf(arrayOfScripts[i]) === -1) {
                 cleanArray.push(arrayOfScripts[i])
             }
         }
-        
+
         return cleanArray;
     },
 
     importScripts: function(arrayOfScripts, ignoreEvents) {
         var cleanArray = this.cleanseArrayOfScripts(arrayOfScripts);
-        
+
         this.populateListOfScripts(cleanArray);
-        
+
         if (this.doConsoleLog)
-            console.log(this.listOfLoadedScripts);        
+            console.log(this.listOfLoadedScripts);
         if (! ignoreEvents) {
             this.toLoadCount = this.countItemsInObject(cleanArray);
             this.loadedCount = 0;
@@ -124,8 +127,8 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
         for (var script in cleanArray) {
             if (cleanArray[script].indexOf('://') === -1)
-                cleanArray[script] = '/' + this.dotToSlash(cleanArray[script]).toLowerCase()+ '.js';
-            this.loadScript(cleanArray[script],this.scriptHandle);          
+                cleanArray[script] = appFolderUrl + '/' + this.dotToSlash(cleanArray[script]).toLowerCase()+ '.js';
+            this.loadScript(cleanArray[script],this.scriptHandle);
         }
     },
 
@@ -168,10 +171,10 @@ window.HyperCore.addBlueprint('HyperCORE', {
             imported.onreadystatechange = me.scriptHandle_ReadyStateChange.bind(me);
             //imported.onerror = me.scriptHandle_Error(); NOT RELIABLE
         }
-        
-        document.head.appendChild(imported);   
-    },  
-     
+
+        document.head.appendChild(imported);
+    },
+
     dotToSlash: function(string) {
         return string.replace(/\./g, '/');
     },
@@ -184,15 +187,15 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
         return cnt;
     },
-     
+
     setupWindowOnError: function() {
         window.onerror = this.errorHandle.bind(this);
     },
 
     errorHandle: function() {
-        if (this.doConsoleLog) 
-            console.log(arguments);       
-        
+        if (this.doConsoleLog)
+            console.log(arguments);
+
         if (this.errorCallBackFunction)
             this.errorCallBackFunction.apply(this);
 
@@ -200,7 +203,7 @@ window.HyperCore.addBlueprint('HyperCORE', {
             this.reloadPage();
         }
     },
-    
+
     flattenArrayOfArrays: function(a, r){
         if(!r){ r = []}
 
@@ -212,8 +215,8 @@ window.HyperCore.addBlueprint('HyperCORE', {
             }
         }
         return r;
-    },    
-    
+    },
+
     reloadPage: function() {BackScope
         //browser function
         location.reload();
@@ -221,7 +224,7 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
     onHyperCoreEvent: function(data) {
         if(data.action == "requires") {
-            this.importScripts(data.data, true);        
+            this.importScripts(data.data, true);
         }
     },
 
@@ -229,13 +232,13 @@ window.HyperCore.addBlueprint('HyperCORE', {
         if (! scope) scope = window;
         (function(args, scope, func) {
             func.apply(scope, args);
-        })(args, scope, func);   
+        })(args, scope, func);
     },
-    
+
     laggedCallBack: function(delay, args, func , scope) {
         var me = this;
         window.setTimeout( function () {
-            me.callBack(args, func, scope); 
+            me.callBack(args, func, scope);
         }, delay);
     },
 
@@ -243,9 +246,8 @@ window.HyperCore.addBlueprint('HyperCORE', {
         var evnt = new CustomEvent(this.eventName,{
             detail: data
         });
-        window.dispatchEvent(evnt);     
+        window.dispatchEvent(evnt);
     }
 });
 
 window['Hycs'] = window['HyperCORE'];
-

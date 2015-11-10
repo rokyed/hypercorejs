@@ -31,28 +31,39 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
     listOfLoadedScripts: null,
 
-    flderURL: '',
+    folderURL: null,
 
-
-    setUp: function(scripts, cbFn,cbScope,cbDelay, startImporting, shallReloadPage, consoleLog, eCbFn, eCbScope,appFolderUrl) {
+    /*
+     * config>scripts
+     * config>callbackFunction
+     * config>callbackScope
+     * config>callbackDelay
+     * config>startImporting
+     * config>shallReloadPage
+     * config>consoleLog
+     * config>errorCallbackFunction
+     * config>errorCallbackScope
+     * config>appFolderUrl
+     */
+    setUp: function(config) {
         this.listOfLoadedScripts = [];
         this.setupWindowOnError();
-        this.scripts = scripts;
-        this.callBackFunction = cbFn || null;
-        this.callBackScope = cbScope || null;
-        this.errorCallBackFunction = eCbFn || null;
-        this.errorCallBackScope = eCbScope || null;
-        this.callBackDelay = cbDelay || 0;
-        this.shallReload = shallReloadPage ? true : false;
-        this.doConsoleLog = consoleLog ? true : false;
-        this.folderURL = appFolderUrl || '';
+        this.scripts = config.scripts;
+        this.callBackFunction = config.callbackFunction || null;
+        this.callBackScope = config.callbackScope || null;
+        this.errorCallBackFunction = config.errorCallbackFunction || null;
+        this.errorCallBackScope = config.errorCallbackScope || null;
+        this.callBackDelay = config.callbackDelay || 0;
+        this.shallReload = config.shallReloadPage ? true : false;
+        this.doConsoleLog = config.consoleLog ? true : false;
+        this.folderURL = config.appFolderUrl || '';
 
         var me = this;
         window.addEventListener(this.eventName, function (e) {
             me.onHyperCoreEvent(e.detail);
         }, false);
 
-        if (startImporting)
+        if (config.startImporting)
             this.startImport();
     },
 

@@ -1,13 +1,17 @@
 
-/// imports 
+/// imports
 var imports = [
     'Base.Functions.BasicFunctions',
-    'Base.Visual.Template'      
+    'Base.Visual.Template'
 ];
 
-window.Hycs.setUp(imports, window.runningNow, window, 100, true);
-
-
+window.Hycs.setUp({
+    scripts: imports,
+    callbackFunction: window.runningNow,
+    callbackScope: window,
+    callbackDelay: 100,
+    startImporting: true
+});
 
 
 function runningNow() {

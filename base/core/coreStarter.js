@@ -126,7 +126,7 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
         for (var script in cleanArray) {
             if (cleanArray[script].indexOf('://') === -1)
-                cleanArray[script] = this.appFolderUrl + '/' + this.dotToSlash(cleanArray[script]).toLowerCase()+ '.js';
+                cleanArray[script] = this.folderURL + '/' + this.dotToSlash(cleanArray[script]).toLowerCase()+ '.js';
             this.loadScript(cleanArray[script],this.scriptHandle);
         }
     },

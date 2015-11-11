@@ -80,7 +80,9 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
     scriptLoadedHandler: function() {
         var me = this;
-        console.log([me.loadedCount, me.readyCount, me.toLoadCount, me.encounteredError]);
+        if (me.doConsoleLog)
+            console.log([me.loadedCount, me.readyCount, me.toLoadCount, me.encounteredError]);
+
         if (me.readyCount == me.toLoadCount &&/* me.readyCount == me.toLoadCount &&*/ !me.encounteredError) {
 
             window.setTimeout(function () {
@@ -129,6 +131,7 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
         if (this.doConsoleLog)
             console.log(this.listOfLoadedScripts);
+
         if (! ignoreEvents) {
             this.toLoadCount = this.countItemsInObject(cleanArray);
             this.loadedCount = 0;
@@ -144,7 +147,6 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
     loadScript: function(src, callback)
     {
-        console.log(src);
         var s,
             r,
             t,

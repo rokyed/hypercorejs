@@ -81,7 +81,7 @@ window.HyperCore.addBlueprint('HyperCORE', {
     scriptLoadedHandler: function() {
         var me = this;
         if (me.doConsoleLog)
-            console.log([me.loadedCount, me.readyCount, me.toLoadCount, me.encounteredError]);
+            console.log('READY:',me.readyCount,'  TO LOAD:', me.toLoadCount,'   ENCOUNTERED ERROR:', me.encounteredError);
 
         if (me.readyCount == me.toLoadCount &&/* me.readyCount == me.toLoadCount &&*/ !me.encounteredError) {
 
@@ -152,6 +152,8 @@ window.HyperCore.addBlueprint('HyperCORE', {
             t,
             scope = this;
 
+
+
         r = false;
         s = document.createElement('script');
         s.type = 'text/javascript';
@@ -160,11 +162,13 @@ window.HyperCore.addBlueprint('HyperCORE', {
 
         s.onload = s.onreadystatechange = function() {
             var me = this;
-        //console.log( this.readyState ); //uncomment this line to see which ready states are called.
             if ( !r && (!me.readyState || me.readyState == 'complete') ) {
                 r = true;
                 if (callback)
                     callback.apply(scope);
+
+                if (scope.doConsoleLog)
+                    console.log(me.src,"loaded!!");
             }
         };
         t = document.getElementsByTagName('script')[0];

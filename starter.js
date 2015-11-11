@@ -10,7 +10,8 @@ window.Hycs.setUp({
     callbackFunction: window.runningNow,
     callbackScope: window,
     callbackDelay: 100,
-    startImporting: true
+    startImporting: true,
+    consoleLog: true
 });
 
 

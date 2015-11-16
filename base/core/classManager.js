@@ -1,7 +1,7 @@
 'use strict';
 
 function HyperCoreClassManagementSystem (hostingObject) {
-    
+
     this.clsName = 'ROOT';
     this.hostingObject = hostingObject;
     this.keyWords = {
@@ -33,7 +33,7 @@ function HyperCoreClassManagementSystem (hostingObject) {
         _instanceList:[],
         _instanceTypeList:[]
         };
-    
+
     this.blueprints = {};
     this.instantiatedClasses = {};
     this.instances = this.instantiatedClasses; // only used for external naming ( shorter )
@@ -48,15 +48,15 @@ function HyperCoreClassManagementSystem (hostingObject) {
     this.setKeyword = function (keyWord, value) {
         this.keyWords[keyWord] = value;
     };
-    
-    // if any other name than 'blueprint' inside the getInstance or makeInstance will be recognized and added to the keywords 
+
+    // if any other name than 'blueprint' inside the getInstance or makeInstance will be recognized and added to the keywords
     // but for love of processor , please use 'blueprint'
     this.addType = function (typeToAdd){
         if (this.keyWords.types.indexOf(typeToAdd) === -1)
             this.keyWords.types.push(typeToAdd);
     };
-    
-    // this will override contents 
+
+    // this will override contents
     this.override = function (parentClass, contents) {
 
         var par = this.blueprints[parentClass];
@@ -71,15 +71,15 @@ function HyperCoreClassManagementSystem (hostingObject) {
         }
 
     };
-    
-    //set parent class and 
+
+    //set parent class and
     this.extend = function (processedContents, incommingContents, parentClass) {
         var par, i = 0;
-        
+
         par = this.blueprints[parentClass];
          // set the parent of the class
         processedContents[kwd.parentClass] = par;
-        
+
         // copy class contents into a processed object ( to be processed)
         for (var item in incommingContents) {
             me.copyItem(item, incommingContents, processedContents);
@@ -132,8 +132,8 @@ function HyperCoreClassManagementSystem (hostingObject) {
 
         delete processedContents[kwd.mixins];
     };
-    
-    //copies config to initial config , initial config used to 
+
+    //copies config to initial config , initial config used to
     //reset any config you need or to get the initial value before changement
     this.setInitials = function (contents) {
         contents[kwd.initials] = {};
@@ -145,7 +145,7 @@ function HyperCoreClassManagementSystem (hostingObject) {
 
     };
 
-    
+
 
     this.addBasics = function (processedContents,classname) {
 
@@ -166,7 +166,7 @@ function HyperCoreClassManagementSystem (hostingObject) {
 
         // calling parent ( first paramenter is the function name , rest of parameters are parameters that parent function accepts)
 
-        processedContents[kwd.callParent] = function(functionName) { 
+        processedContents[kwd.callParent] = function(functionName) {
             // if not called already will not dig into parent's parent's parent..... and so on
             if (me.calledParentFlag === false) {
                 me.calledParentFlag = true;
@@ -174,16 +174,16 @@ function HyperCoreClassManagementSystem (hostingObject) {
             } else {
                 me.calledParentScope = me.calledParentScope[kwd.parentClass];
             }
-            
+
             var fn = functionName,
                 tempReturn;
             [].shift.apply(arguments);
 
             tempReturn = me.calledParentScope[fn].apply(this,arguments);
-            
+
             me.calledParentFlag= false;
 
-            return tempReturn;     
+            return tempReturn;
         };
         // set classname for the class
         processedContents[kwd.className] = classname;
@@ -191,22 +191,22 @@ function HyperCoreClassManagementSystem (hostingObject) {
     };
 
     // --------------------------------------------------
-    // the actual creation of the BLUEPRINT happends here 
+    // the actual creation of the BLUEPRINT happends here
     // --------------------------------------------------
     this.addBlueprint = function (classname, itsContents, action, fromParent) {
         var processedContents = {};
-        
+
         if (!itsContents[kwd.config]) {
             itsContents[kwd.config] = {};
         }
-        
+
         if (itsContents[kwd.requires]) {
             this.fireEvent({
                 action: 'requires',
                 data: itsContents[kwd.requires]
             });
-        }            
-        
+        }
+
         if (!action || action == kwd.define) {
             processedContents = itsContents;
         }
@@ -236,11 +236,11 @@ function HyperCoreClassManagementSystem (hostingObject) {
                 newTreeObject;
             this.createTreeObjects(this.hostingObject, treeArray,this.getInstance({
                 blueprint: classname
-            })); 
-            
+            }));
+
         }
     };
-    
+
     // this will generate the objects in the hosting object in order like the string eg.: CORE.OBJ1.CHILD1.SUBCHILD1.ACTUALCLASS
     // this will return the objectToInsertAtEnd because that's the object we want at the end of the branch in the tree
     this.createTreeObjects = function (inObject, arrayOfObjects, objectToInsertAtEnd) {
@@ -248,23 +248,23 @@ function HyperCoreClassManagementSystem (hostingObject) {
             this.createEmptyObject(arrayOfObjects[0],inObject);
             var inNewObject = inObject[arrayOfObjects[0]];
             arrayOfObjects.shift();
-            return this.createTreeObjects(inNewObject, arrayOfObjects, objectToInsertAtEnd);                  
+            return this.createTreeObjects(inNewObject, arrayOfObjects, objectToInsertAtEnd);
         } else {
-            inObject[arrayOfObjects[0]] = objectToInsertAtEnd;  
-            return inObject        
-        }  
+            inObject[arrayOfObjects[0]] = objectToInsertAtEnd;
+            return inObject
+        }
     };
 
     // this will create an empty object in
     this.createEmptyObject = function (newObjectName,parentObject) {
         if (!parentObject[newObjectName]) {
             parentObject[newObjectName] = {};
-            return parentObject[newObjectName];        
+            return parentObject[newObjectName];
         }else{
             return parentObject;
         }
     };
-    
+
     // this will add prefix to the word and will make the word's first letter uppercase
     this.addPrefix = function (prefix, word) {
         word = word.substring(0,1).toUpperCase() + word.substring(1,word.length);
@@ -275,7 +275,7 @@ function HyperCoreClassManagementSystem (hostingObject) {
     // DO NOT USE FOR COMPLETE OBJECTS OR THEY WILL REFERENCE
     this.copyItem = function (itemName, fromObj, toObj){
         var typeOfVar = this.typeOf(fromObj[itemName]);
-        
+
         if (typeOfVar != null && typeOfVar != "Unidentified" && typeOfVar != "Function" && typeOfVar != "String"  && typeOfVar != "Number"  && typeOfVar != "Boolean")
             toObj[itemName] = this.newVar(typeOfVar, fromObj[itemName]);
         else
@@ -305,7 +305,7 @@ function HyperCoreClassManagementSystem (hostingObject) {
             }
         }
     };
-    
+
     // this will create an unique id for instances
     this.generateInstanceUID = function (classname) {
         return classname + this.ownSettings.instanceId++;
@@ -359,7 +359,7 @@ function HyperCoreClassManagementSystem (hostingObject) {
 
         // second time we try searching in the first level of depth of the instance settings
 
-        if (!classname) {    
+        if (!classname) {
             // normal search
             for (var item in settings) {
                 for (var cls in this.blueprints) {
@@ -369,7 +369,7 @@ function HyperCoreClassManagementSystem (hostingObject) {
                         // also we add the new item as type alias
                         this.addType(item);
                     }
-                }              
+                }
             }
         }
 
@@ -393,12 +393,12 @@ function HyperCoreClassManagementSystem (hostingObject) {
             this.instantiatedClasses[uid][readyCall]();
         }
         this.instantiatedClasses[uid][kwd.uniqueID] = uid;
-        
+
         if (this.instantiatedClasses[uid][kwd.autoInitialize]) {
-            var instance = this.instantiatedClasses[uid];            
+            var instance = this.instantiatedClasses[uid];
             instance[instance[kwd.autoInitialize]].apply(instance, instance);
         }
-        
+
         return uid;
     };
 
@@ -407,29 +407,29 @@ function HyperCoreClassManagementSystem (hostingObject) {
 
         if (typeOfVar == "Array" || typeOfVar == "Object") {
             var temp = this.newVar(typeOfVar);
-            
+
             if (typeOfVar == 'Array') {
                 for (var key in variableToClone)
                     temp.push(this.clone(variableToClone[key]));
-            
+
             } else {
                 for (var key in variableToClone) {
                     if (variableToClone.hasOwnProperty(key)) {
                         temp[key] = this.clone(variableToClone[key]);
                     }
                 }
- 
+
             }
             return temp;
         }
-        
+
         return this.newVar(typeOfVar, variableToClone);
     };
 
     // this will clone configs but will modify functions to reference the blueprint (but only on first level of depth)
 
     this.cloneForInstance = function (obj, cname,objname) {
-        
+
         if (objname && cname) {
             var me = this;
             var tmpFn = function () {
@@ -459,18 +459,18 @@ function HyperCoreClassManagementSystem (hostingObject) {
     this.getInstance = function(uid) {
 
         if (this.typeOf(uid) === "Object") {
-            var instanceId = this.makeInstance(uid);         
+            var instanceId = this.makeInstance(uid);
             return this.instantiatedClasses[instanceId];
-        } else {   
+        } else {
             return this.instantiatedClasses[uid];
         }
     };
-    
+
     this.fireEvent = function(data) {
         var evnt = new CustomEvent([kwd.fireEventName],{
             detail: data
         });
-        this.hostingObject.dispatchEvent(evnt);        
+        this.hostingObject.dispatchEvent(evnt);
     };
 
     // call function you need ( instancename (uid) , function name ,parameter1....)
@@ -524,23 +524,28 @@ function HyperCoreClassManagementSystem (hostingObject) {
     this.isArray = function(variable) {
         if (variable.constructor === Array)
             return true;
-        return false;    
+        return false;
     };
 
     this.newVar = function(ofType, value) {
         if(ofType === "String")
            return new String(value);
+
         if(ofType === "Number")
            return new Number(value);
+
         if(ofType === "Boolean")
            return new String(value);
-        if(ofType === "Array")
-           return new Array(value);
+
+        if(ofType === "Array") 
+           return JSON.parse(JSON.stringify(value));
+
         if(ofType === "Object")
            return new Object(value);
+
         if(ofType === "Function")
            return new Function(value);
-    };    
+    };
 
     this.typeOf = function(variable) {
         if (variable === undefined) return 'Undefined';
@@ -552,9 +557,9 @@ function HyperCoreClassManagementSystem (hostingObject) {
         if (variable.constructor === Object) return 'Object';
         if (variable.constructor === Function) return 'Function';
         if (variable.constructor === NaN) return 'NaN';
-        return 'Unidentified';       
+        return 'Unidentified';
     };
-    
+
     this.STAT_CURRENT_LOAD = function() {
         return this.countItemsIn(this.instantiatedClasses);
     };

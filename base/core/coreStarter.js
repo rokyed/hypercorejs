@@ -233,7 +233,7 @@ window.HyperCore.addBlueprint('HyperCORE', {
         return r;
     },
 
-    reloadPage: function() {BackScope
+    reloadPage: function() {
         //browser function
         location.reload();
     },

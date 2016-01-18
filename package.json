@@ -1,0 +1,19 @@
+{
+  "name": "hypercorejs",
+  "version": "0.0.9",
+  "description": "CMS",
+  "main": "starter.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rokyed/hypercorejs.git"
+  },
+  "author": "rokyed@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rokyed/hypercorejs/issues"
+  },
+  "homepage": "https://github.com/rokyed/hypercorejs#readme"
+}
